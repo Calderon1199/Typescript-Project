@@ -13,7 +13,7 @@ module.exports = {
             updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             INDEX (userId),
-            CONSTRAINT fk_userId FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+            CONSTRAINT fk_listings_userId FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
         )
     `,
     "down": "DROP TABLE IF EXISTS listings"

@@ -11,8 +11,8 @@ module.exports = {
             PRIMARY KEY (id),
             INDEX (listingId),
             INDEX (userId),
-            CONSTRAINT fk_listingId FOREIGN KEY (listingId) REFERENCES listings(id) ON DELETE CASCADE,
-            CONSTRAINT fk_userId FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+            CONSTRAINT fk_reviews_listingId FOREIGN KEY (listingId) REFERENCES listings(id) ON DELETE CASCADE,
+            CONSTRAINT fk_reviews_userId FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
         )
     `,
     "down": "DROP TABLE IF EXISTS reviews"
