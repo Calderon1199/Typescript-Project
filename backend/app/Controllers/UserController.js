@@ -1,133 +1,119 @@
-const db = require('../../migration');
+const { pool } = require('../../migration');
 const User = require('../Models/User');
 
 module.exports = {
+    userStore: async (req, res, next) => {
+        try {
+            const { firstName, lastName, email, username, password } = req.body;
 
-    /**
-     * store user details.
-     */
-    userStore: (req, res, next) => {
-        const userData = {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            username: req.body.username,
-            password: req.body.password,
-        }
-        const user = new User(userData);
+            // Basic input validation
+            if (!firstName || !lastName || !email || !username || !password) {
+                return res.status(400).json({ error: 'All fields are required' });
+            }
 
-        db.query(user.addUser(), (err, result) => {
-            if (err) {
-                // Check for duplicate entry error
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(409).json({
-                        'error': 'Duplicate entry. Email or username already exists.',
-                    });
-                } else {
-                    return res.status(400).json({
-                        'error': err.message,
-                        'error_line': err.files,
-                    });
-                }
+            const userData = {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: email.trim(),
+                username: username.trim(),
+                password: password,
             };
 
-            db.query(User.getUserById(result.insertId), (err, userData) => {
-                if (err) {
-                    return res.status(400).json({
-                        'error': err.message,
-                    });
-                }
+            const user = new User(userData);
+            const userId = await user.addUser();
+            const newUser = await User.getUserById(userId);
 
-                res.status(200).json({
-                    'data': userData[0],
-                });
+            res.status(201).json({
+                message: 'User created successfully',
+                data: newUser,
             });
-        });
-    },
-
-    /**
-     * Get the lists of all users.
-     */
-    usersLists: (req, res, next) => {
-        db.query(User.getAllUsers(), (err, result) => {
-            if (err) {
-                return res.status(400).json({
-                    'error': err.message,
-                });
+        } catch (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ error: 'Email or username already exists.' });
             }
-
-            res.status(200).json({
-                'data': result,
-            });
-        })
-    },
-
-    /**
-     * Update user details.
-     */
-    updateUser: (req, res, next) => {
-        const userData = {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            username: req.body.username,
-            password: req.body.password,
-            email: req.body.email,
+            next(err);
         }
+    },
 
-        const user = new User(userData);
-        const id = req.params.id;
-        db.query(user.updateUser(id), (err, result) => {
-            if (err) {
-                return res.status(400).json({
-                    'error': err.message,
-                });
-            }
+    usersLists: async (req, res, next) => {
+        try {
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = parseInt(req.query.offset) || 0;
+            const users = await User.getAllUsers(limit, offset);
 
-            db.query(User.getUserById(id), (err, userData) => {
-
-                if (err) {
-                    return res.status(400).json({
-                        'error': err.message,
-                    });
+            res.status(200).json({
+                data: users,
+                metadata: {
+                    limit,
+                    offset,
+                    total: users.length
                 }
-
-                res.status(200).json({
-                    'message': 'User updated successfully.',
-                    'data': userData[0],
-                });
             });
-        });
+        } catch (err) {
+            next(err);
+        }
     },
-    /**
-     * get user details by user id.
-     */
-    getUserById: (req, res, next) => {
-        const id = req.params.id;
-        db.query(User.getUserById(id), (err, result) => {
-            if (err) {
-                return res.status(404).json({
-                    'error': err.message,
-                });
+
+    updateUser: async (req, res, next) => {
+        try {
+            const { firstName, lastName, username, email } = req.body;
+            const id = req.params.id;
+
+            // Basic input validation
+            if (!firstName || !lastName || !username || !email) {
+                return res.status(400).json({ error: 'All fields are required' });
+            }
+
+            const userData = {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                username: username.trim(),
+                email: email.trim(),
+            };
+
+            const user = new User(userData);
+            await user.updateUser(id);
+            const updatedUser = await User.getUserById(id);
+
+            res.status(200).json({
+                message: 'User updated successfully.',
+                data: updatedUser,
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    getUserById: async (req, res, next) => {
+        try {
+            const id = req.params.id;
+            const user = await User.getUserById(id);
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
             }
 
             res.status(200).json({
-                'data': result[0],
+                data: user,
             });
-        })
+        } catch (err) {
+            next(err);
+        }
     },
 
-    deleteUser: (req, res, next) => {
-        const id = req.params.id;
-        db.query(User.deleteUserById(id), (err, result) => {
-            if (err) {
-                return res.status(404).json({
-                    'error': err.message,
-                });
-            }
+    deleteUser: async (req, res, next) => {
+        try {
+            const id = req.params.id;
+            await User.deleteUserById(id);
 
             res.status(200).json({
-                'message': 'User deleted successfully.',
+                message: 'User deleted successfully.',
             });
-        })
+        } catch (err) {
+            if (err.message === 'User not found') {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            next(err);
+        }
     }
-}
+};
