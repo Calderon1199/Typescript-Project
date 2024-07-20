@@ -2,10 +2,10 @@ const { body } = require('express-validator');
 
 const validateUser = () => {
     return [
-        body('firstName')
+        body('firstName').trim()
             .isString()
             .withMessage('First name must be a string')
-            .isAlpha()
+            .matches(/^[A-Za-z\s]+$/)
             .withMessage('First name must contain letters only')
             .exists()
             .withMessage('Please provide a first name')
@@ -13,10 +13,10 @@ const validateUser = () => {
             .withMessage('First Name is must be at least 2 characters long')
             .isLength({ max: 50})
             .withMessage('Exceeds character limit'),
-        body('lastName')
+        body('lastName').trim()
             .isString()
             .withMessage('Last name must be a string')
-            .isAlpha()
+            .matches(/^[A-Za-z\s]+$/)
             .withMessage('Last name must contain letters only')
             .exists()
             .withMessage('Please provide a last name')
@@ -31,7 +31,7 @@ const validateUser = () => {
             .withMessage('Username must be at least 5 characters long')
             .isLength({ max: 50})
             .withMessage('Exceeds character limit'),
-        body('email')
+        body('email').trim()
             .isEmail()
             .withMessage('Must be a valid email address'),
         body('password')
