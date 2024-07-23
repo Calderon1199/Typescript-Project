@@ -1,4 +1,4 @@
-const validateAddress = require('../Middlewares/ValidateListings');
+const {validateAddress} = require('../Middlewares/ValidateListings');
 const Listing = require('../Models/Listing');
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
                 userId,
                 street: street.trim(),
                 city: city.trim(),
-                zipcode: zipcode.trim(),
+                zipcode,
                 state: state.trim(),
                 country: country.trim(),
                 description: description.trim(),
@@ -77,7 +77,7 @@ module.exports = {
                 const updatedData = {
                     street: street.trim(),
                     city: city.trim(),
-                    zipcode: zipcode.trim(),
+                    zipcode,
                     state: state.trim(),
                     country: country.trim(),
                     description: description.trim(),
