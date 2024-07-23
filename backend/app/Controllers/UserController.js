@@ -1,4 +1,5 @@
 const { pool } = require('../../migration');
+const { setTokenCookie } = require('../../utils/auth');
 const User = require('../Models/User');
 
 module.exports = {
@@ -6,10 +7,6 @@ module.exports = {
         try {
             const { firstName, lastName, email, username, password } = req.body;
 
-            // Basic input validation
-            if (!firstName || !lastName || !email || !username || !password) {
-                return res.status(400).json({ error: 'All fields are required' });
-            }
 
             const userData = {
                 firstName: firstName.trim(),
@@ -22,6 +19,8 @@ module.exports = {
             const user = new User(userData);
             const userId = await user.addUser();
             const newUser = await User.getUserById(userId);
+
+            await setTokenCookie(res, userData);
 
             res.status(201).json({
                 message: 'User created successfully',
@@ -59,10 +58,6 @@ module.exports = {
             const { firstName, lastName, username, email } = req.body;
             const id = req.params.id;
 
-            // Basic input validation
-            if (!firstName || !lastName || !username || !email) {
-                return res.status(400).json({ error: 'All fields are required' });
-            }
 
             const userData = {
                 firstName: firstName.trim(),

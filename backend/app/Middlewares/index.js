@@ -13,4 +13,13 @@ const validate = (req, res, next) => {
     })
 }
 
+const checkAuthorization = (data) => {
+    const userId = req.user.id;
+    if (data.userId = userId) {
+        return true;
+    }
+
+    return false;
+}
+
 module.exports = validate;
