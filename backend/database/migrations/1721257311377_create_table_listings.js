@@ -3,7 +3,9 @@ module.exports = {
         CREATE TABLE listings (
             id INT NOT NULL AUTO_INCREMENT,
             userId INT NOT NULL,
-            address VARCHAR(255) NOT NULL,
+            street VARCHAR(100) UNIQUE NOT NULL,
+            zipcode CHAR(5) NOT NULL,
+            city VARCHAR(60) NOT NULL,
             state CHAR(2) NOT NULL,
             country VARCHAR(100) NOT NULL,
             name VARCHAR(100) NOT NULL,

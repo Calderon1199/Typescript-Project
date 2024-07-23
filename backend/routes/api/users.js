@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const UserController = require('../app/Controllers/UserController');
-const validateUser = require('../app/Middlewares/ValidateUsers');
-const validate = require('../app/Middlewares');
+const UserController = require('../../app/Controllers/UserController');
+const validateUser = require('../../app/Middlewares/ValidateUsers');
+const validate = require('../../app/Middlewares');
 
 /* GET users listing. */
 router.post('/', validateUser(), validate, UserController.userStore);
