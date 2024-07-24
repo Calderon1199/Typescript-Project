@@ -4,7 +4,7 @@ const listingRouter = require('./listings');
 const reviewRouter = require('./reviews');
 const userRouter = require('./users');
 
-router.use(restoreUser);
+router.use('/', restoreUser);
 
 router.use('/users', userRouter);
 router.use('/listings', listingRouter);
