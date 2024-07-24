@@ -10,3 +10,5 @@ const validateReviewImage = () => {
             .withMessage('Provide image url')
     ]
 }
+
+module.exports = validateReviewImage;
