@@ -93,9 +93,9 @@ const validateAddress = async(street, city, state, zipcode) => {
     } catch (error) {
         console.error(error);
         throw new Error('Error validating address');
-    }
+    };
 
-}
+};
 
 
 module.exports = {

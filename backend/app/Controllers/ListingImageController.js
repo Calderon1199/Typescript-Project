@@ -6,9 +6,9 @@ module.exports = {
             const { listingId, url, preview } = req.body;
 
             const listingImageData = {
+                preview,
                 listingId,
-                url: url.trim(),
-                preview
+                url: url.trim()
             };
 
             const listingImage = new ListingImage(listingImageData);
@@ -21,7 +21,7 @@ module.exports = {
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     listingImageList: async (req, res, next) => {
@@ -33,8 +33,8 @@ module.exports = {
             });
 
         } catch (err) {
-            next(err)
-        }
+            next(err);
+        };
     },
 
     updateListingImage: async (req, res, next) => {
@@ -54,7 +54,7 @@ module.exports = {
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     deleteListingImage: async (req, res, next) => {
@@ -67,9 +67,9 @@ module.exports = {
                 res.status(200).json({ message: 'Image successfully deleted'});
             } else {
                 res.status(404).json({ message: 'Image not found'});
-            }
+            };
         } catch (err) {
             next(err);
-        }
+        };
     }
 };
