@@ -1,9 +1,9 @@
 const { query } = require('../../migration');
+const bcrypt = require('bcrypt');
 
 class User {
     constructor(data) {
-        this.firstName = data.firstName;
-        this.lastName = data.lastName;
+        this.fullName = data.fullName
         this.username = data.username;
         this.password = data.password;
         this.email = data.email;
@@ -11,11 +11,12 @@ class User {
 
 
     async addUser() {
-        const sql = 'INSERT INTO users (firstName, lastName, username, password, email) VALUES (?, ?, ?, ?, ?)';
-        const values = [this.firstName, this.lastName, this.username, this.password, this.email];
+        const hashedPassword = await bcrypt.hashSync(this.password, 10);
+        const sql = 'INSERT INTO users (fullName, username, password, email) VALUES (?, ?, ?, ?)';
+        const values = [this.fullName, this.username, hashedPassword, this.email];
         const result = await query(sql, values);
         return result.insertId;
-    };
+    }
 
     async updateUser(id) {
         const sql = 'UPDATE users SET username = ? WHERE id = ?';
@@ -24,7 +25,7 @@ class User {
     };
 
     static async getUserById(id) {
-        const sql = 'SELECT id, firstName, lastName, username, email FROM users WHERE id = ?';
+        const sql = 'SELECT id, fullName, username, email FROM users WHERE id = ?';
         const users = await query(sql, [id]);
         return users[0];
     };
@@ -35,7 +36,7 @@ class User {
     };
 
     static async getAllUsers(limit = 10, offset = 0) {
-        const sql = 'SELECT id, firstName, lastName, username, email FROM users LIMIT ? OFFSET ?';
+        const sql = 'SELECT id, fullName, username, email FROM users LIMIT ? OFFSET ?';
         return await query(sql, [limit, offset]);
     };
 
@@ -43,6 +44,22 @@ class User {
         const sql = 'SELECT * FROM users WHERE username = ?';
         const users = await query(sql, [username]);
         return users[0];
+    };
+
+    static async authenticate(usernameOrEmail, password) {
+        const sql = 'SELECT id, fullName, username, password, email FROM users WHERE username = ? OR email = ?';
+        const users = await query(sql, [usernameOrEmail, usernameOrEmail]);
+
+        if (users.length === 0) return null;
+
+        const user = users[0];
+        const passwordMatch = await bcrypt.compareSync(password, user.password);
+
+        if (passwordMatch) {
+            return user;
+        } else {
+            return null;
+        }
     };
 };
 
