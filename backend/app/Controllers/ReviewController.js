@@ -7,12 +7,11 @@ module.exports = {
             const { userId, listingId, reviewText, stars } = req.body;
 
             const reviewData = {
+                stars,
                 userId,
                 listingId,
-                reviewText: reviewText.trim(),
-                stars
-            }
-
+                reviewText: reviewText.trim()
+            };
 
             const review = new Review(reviewData);
             const reviewId = await review.addReview();
@@ -21,10 +20,10 @@ module.exports = {
             res.status(201).json({
                 message: 'Review created successfully',
                 data: newReview
-            })
+            });
         } catch (err) {
-            next(err)
-        }
+            next(err);
+        };
     },
 
     reviewLists: async (req, res, next) => {
@@ -40,10 +39,10 @@ module.exports = {
                     offset,
                     total: reviews.length
                 }
-            })
+            });
         } catch (err) {
-            next(err)
-        }
+            next(err);
+        };
     },
 
     updateReview: async (req, res, next) => {
@@ -51,10 +50,7 @@ module.exports = {
             const { reviewText, stars } = req.body;
             const id = req.params.id;
 
-            const reviewData = {
-                reviewText: reviewText.trim(),
-                stars
-            }
+            const reviewData = { reviewText: reviewText.trim(), stars };
 
             const review = new Review(reviewData);
             await review.updateReview(id);
@@ -63,10 +59,9 @@ module.exports = {
             res.status(200).json({
                 message: 'Review updated successfully',
                 data: updatedReview
-            })
-
+            });
         } catch (err) {
-            next(err)
+            next(err);
         }
     },
 
@@ -78,14 +73,12 @@ module.exports = {
 
             if (reviewToDelete) {
                 await Review.deleteReviewById(id);
-
                 res.status(200).json({ message: 'Review deleted successfully'});
             } else {
-                res.status(404).json({ message: 'Review not found'})
+                res.status(404).json({ message: 'Review not found'});
             }
         } catch (err) {
-            next(err)
-        }
+            next(err);
+        };
     }
-}
-
+};

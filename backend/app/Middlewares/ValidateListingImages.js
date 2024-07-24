@@ -17,4 +17,4 @@ const validateListingImage = () => {
     ]
 };
 
-module.exports = validateReviewImage;
+module.exports = validateListingImage;

@@ -7,15 +7,15 @@ module.exports = {
             const { userId, street, city, zipcode, state, country, name, description, price } = req.body;
 
             const listingData = {
+                price,
                 userId,
-                street: street.trim(),
-                city: city.trim(),
                 zipcode,
-                state: state.trim(),
-                country: country.trim(),
-                description: description.trim(),
+                city: city.trim(),
                 name: name.trim(),
-                price
+                state: state.trim(),
+                street: street.trim(),
+                country: country.trim(),
+                description: description.trim()
             };
 
             const validationResponse = await validateAddress(street, city, state, zipcode);
@@ -31,14 +31,14 @@ module.exports = {
                 });
             } else {
                 return res.status(422).json({ message: 'Address validation failed' });
-            }
+            };
 
         } catch (err) {
             if (err.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Address already exists.' });
             }
             next(err);
-        }
+        };
     },
 
     listingsLists: async (req, res, next) => {
@@ -57,7 +57,7 @@ module.exports = {
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     updateListing: async (req, res, next) => {
@@ -75,14 +75,14 @@ module.exports = {
 
             if (validationResponse > 0) {
                 const updatedData = {
-                    street: street.trim(),
-                    city: city.trim(),
+                    price,
                     zipcode,
+                    name: name.trim(),
+                    city: city.trim(),
                     state: state.trim(),
+                    street: street.trim(),
                     country: country.trim(),
                     description: description.trim(),
-                    name: name.trim(),
-                    price
                 };
 
                 const listing = new Listing({ ...existingListing, ...updatedData });
@@ -96,10 +96,10 @@ module.exports = {
                 });
             } else {
                 return res.status(422).json({ message: 'Address validation failed' });
-            }
+            };
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     deleteListing: async (req, res, next) => {
@@ -111,12 +111,12 @@ module.exports = {
             if (listingToDelete) {
                 await Listing.deleteListingById(id);
 
-                res.status(200).json({ message: 'Listing deleted successfully.'})
+                res.status(200).json({ message: 'Listing deleted successfully.'});
             } else {
-                res.status(404).json({ message: 'Listing not found.'})
+                res.status(404).json({ message: 'Listing not found.'});
             }
         } catch (err) {
             next(err);
-        }
+        };
     }
 };

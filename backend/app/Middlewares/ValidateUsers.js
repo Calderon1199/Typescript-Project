@@ -40,6 +40,6 @@ const validateUser = () => {
             .isLength({ max: 20 })
             .withMessage('Exceeds character limit'),
     ];
-}
+};
 
 module.exports = validateUser;

@@ -1,4 +1,3 @@
-const { pool } = require('../../migration');
 const { setTokenCookie } = require('../../utils/auth');
 const User = require('../Models/User');
 
@@ -7,13 +6,12 @@ module.exports = {
         try {
             const { firstName, lastName, email, username, password } = req.body;
 
-
             const userData = {
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
+                password,
                 email: email.trim(),
+                lastName: lastName.trim(),
                 username: username.trim(),
-                password: password,
+                firstName: firstName.trim()
             };
 
             const user = new User(userData);
@@ -29,9 +27,9 @@ module.exports = {
         } catch (err) {
             if (err.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Email or username already exists.' });
-            }
+            };
             next(err);
-        }
+        };
     },
 
     usersLists: async (req, res, next) => {
@@ -50,21 +48,14 @@ module.exports = {
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     updateUser: async (req, res, next) => {
         try {
-            const { firstName, lastName, username, email } = req.body;
+            const { username } = req.body;
             const id = req.params.id;
-
-
-            const userData = {
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                username: username.trim(),
-                email: email.trim(),
-            };
+            const userData = { username: username.trim()};
 
             const user = new User(userData);
             await user.updateUser(id);
@@ -76,7 +67,7 @@ module.exports = {
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     getUserById: async (req, res, next) => {
@@ -86,14 +77,14 @@ module.exports = {
 
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
-            }
+            };
 
             res.status(200).json({
                 data: user,
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     deleteUser: async (req, res, next) => {
@@ -109,6 +100,6 @@ module.exports = {
                 return res.status(404).json({ error: 'User not found' });
             }
             next(err);
-        }
+        };
     }
 };

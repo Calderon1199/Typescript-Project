@@ -9,6 +9,6 @@ const validateReviewImage = () => {
             .exists()
             .withMessage('Provide image url')
     ]
-}
+};
 
 module.exports = validateReviewImage;

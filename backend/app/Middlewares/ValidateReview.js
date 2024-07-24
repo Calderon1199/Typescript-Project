@@ -16,6 +16,6 @@ const validateReview = () => {
             .exists()
             .withMessage('Please provide a star rating')
     ]
-}
+};
 
 module.exports = validateReview;
