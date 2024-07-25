@@ -8,8 +8,8 @@ const { requireAuth } = require('../../utils/auth');
 /* GET users listing. */
 router.post('/', validateUser(), validate, UserController.userStore);
 router.post('/login', validate, UserController.userLogin);
-router.get('/:id', requireAuth, UserController.getUserById);
 router.get('/all', requireAuth, UserController.usersLists);
+router.get('/:id', requireAuth, UserController.getUserById);
 router.put('/:id', validateUser(), validate, UserController.updateUser);
 router.delete('/logout', validate, UserController.userLogout);
 router.delete('/:id', UserController.deleteUser);

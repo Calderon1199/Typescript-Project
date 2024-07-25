@@ -4,7 +4,8 @@ const Listing = require('../Models/Listing');
 module.exports = {
     listingStore: async (req, res, next) => {
         try {
-            const { userId, street, city, zipcode, state, country, name, description, price } = req.body;
+            const userId = req.user.id;
+            const { price, zipcode, city, name, state, street, country, description } = req.body;
 
             const listingData = {
                 price,
@@ -36,9 +37,42 @@ module.exports = {
         } catch (err) {
             if (err.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Address already exists.' });
-            }
+            };
             next(err);
         };
+    },
+
+    userListings: async (req, res, next) => {
+        try {
+            const {id} = req.user;
+            const userListings = await Listing.getUserListings(id);
+
+            if (!userListings.length) {
+                return res.status(200).json({ message: 'No owned listings'});
+            } else {
+                res.status(200).json({ userListings: userListings});
+            };
+
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    singleListing: async (req, res, next) => {
+        try {
+            const {id} = req.params;
+            const singleListing = await Listing.getListingById(id);
+
+            if (!singleListing) {
+                return res.status(404).json({ message: 'Listing not found'});
+            } else {
+                return res.status(200).json({
+                    listing: singleListing
+                });
+            };
+        } catch (err) {
+            next(err);
+        }
     },
 
     listingsLists: async (req, res, next) => {
@@ -47,14 +81,17 @@ module.exports = {
             const offset = parseInt(req.query.offset, 10) || 0;
             const listings = await Listing.getAllListings(limit, offset);
 
+            if (!listings.length) return res.status(200).json({message: 'No listings found'});
+
             return res.status(200).json({
-                data: listings,
+                allListings: listings,
                 metadata: {
                     limit,
                     offset,
                     total: listings.length
                 }
             });
+
         } catch (err) {
             next(err);
         };
@@ -62,32 +99,25 @@ module.exports = {
 
     updateListing: async (req, res, next) => {
         try {
-            const { street, city, zipcode, state, country, name, description, price } = req.body;
-            const id = req.params.id;
+            const {street, city, state, zipcode, ...updatedData} = req.body;
+            const {id} = req.params;
+            const userId = req.user.id;
 
             const existingListing = await Listing.getListingById(id);
 
             if (!existingListing) {
                 return res.status(404).json({ message: 'Listing not found.' });
-            }
+            };
+            if (existingListing.userId !== userId) {
+                return res.status(401).json({ message: 'Forbidden' });
+            };
 
             const validationResponse = await validateAddress(street, city, state, zipcode);
 
             if (validationResponse > 0) {
-                const updatedData = {
-                    price,
-                    zipcode,
-                    name: name.trim(),
-                    city: city.trim(),
-                    state: state.trim(),
-                    street: street.trim(),
-                    country: country.trim(),
-                    description: description.trim(),
-                };
-
-                const listing = new Listing({ ...existingListing, ...updatedData });
-                await listing.updateListing();
-
+                const newData = { ...existingListing, ...updatedData, street, city, state, zipcode };
+                const listing = new Listing(newData);
+                await listing.updateListing(id);
                 const updatedListing = await Listing.getListingById(id);
 
                 return res.status(200).json({
@@ -105,16 +135,14 @@ module.exports = {
     deleteListing: async (req, res, next) => {
         try {
             const {id} = req.params;
+            const listingToDelete = await Listing.getListingById(+id);
 
-            const listingToDelete = await Listing.getListingById(id);
+            if (!listingToDelete) return res.status(404).json({ message: 'Listing not found.' });
+            if (listingToDelete.userId !== req.user.id) return res.status(401).json({ message: 'Forbidden'});
 
-            if (listingToDelete) {
-                await Listing.deleteListingById(id);
+            await Listing.deleteListingById(id);
+            return res.status(200).json({ message: 'Listing deleted successfully.'});
 
-                res.status(200).json({ message: 'Listing deleted successfully.'});
-            } else {
-                res.status(404).json({ message: 'Listing not found.'});
-            }
         } catch (err) {
             next(err);
         };
