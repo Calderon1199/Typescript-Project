@@ -24,8 +24,13 @@ class Listing {
     async updateListing(id) {
         const sql = 'UPDATE listings SET name = ?, city = ?, state = ?, price = ?, street = ?, zipcode = ?, country = ?, description = ? WHERE id = ?';
         const values = [this.name, this.city, this.state, this.price, this.street, this.zipcode, this.country, this.description, id];
-        await query(sql, values);
+        return await query(sql, values);
     };
+
+    static async getUserListings(id) {
+        const sql = 'SELECT * FROM listings WHERE userId = ?';
+        return await query(sql, [id]);
+    }
 
     static async getListingById(id) {
         const sql = 'SELECT id, name, city, state, price, userId, street, zipcode, country, description FROM listings WHERE id = ?';
@@ -35,7 +40,7 @@ class Listing {
 
     static async deleteListingById(id) {
         const sql = 'DELETE FROM listings WHERE id = ?';
-        await query(sql, [id]);
+        return await query(sql, [id]);
     };
 
     static async getAllListings(limit = 10, offset = 0) {
