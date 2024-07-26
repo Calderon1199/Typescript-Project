@@ -26,6 +26,38 @@ module.exports = {
         };
     },
 
+    userReviews: async (req, res, next) => {
+        try {
+            const {id} = req.user;
+            const userReviews = await Review.getUserReviews(id);
+
+            if (!userReviews.length) {
+                return res.status(200).json({ message: 'No owned reviews' });
+            } else {
+                return res.status(200).json({ userReviews });
+            };
+
+        } catch (err) {
+            next(err);
+        };
+    },
+
+    singleReview: async (req, res, next) => {
+        try {
+            const {id} = req.params;
+
+            const singleReview = await Review.getReviewById(id);
+
+            if (!singleReview) {
+                res.status(404).json({ message: 'Review not found' });
+            } else {
+                res.status(200).json({ review: singleReview });
+            };
+        } catch (err) {
+            next(err)
+        };
+    },
+
     reviewLists: async (req, res, next) => {
         try {
             const limit = parseInt(req.query.limit) || 10;
@@ -49,9 +81,12 @@ module.exports = {
         try {
             const { reviewText, stars } = req.body;
             const id = req.params.id;
+            const userId = req.user.id;
+            const originalReview = await Review.getReviewById(id);
+
+            if (originalReview.userId !== userId) return res.status(401).json({ message: 'forbidden' });
 
             const reviewData = { reviewText: reviewText.trim(), stars };
-
             const review = new Review(reviewData);
             await review.updateReview(id);
             const updatedReview = await Review.getReviewById(id);
@@ -62,21 +97,23 @@ module.exports = {
             });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     deleteReview: async (req, res, next) => {
         try {
             const {id} = req.params;
+            const userId = req.user.id;
 
             const reviewToDelete = await Review.getReviewById(id);
+            if (reviewToDelete.userId !== userId) return res.status(401).json({ message: 'forbidden' });
 
             if (reviewToDelete) {
                 await Review.deleteReviewById(id);
                 res.status(200).json({ message: 'Review deleted successfully'});
             } else {
                 res.status(404).json({ message: 'Review not found'});
-            }
+            };
         } catch (err) {
             next(err);
         };
