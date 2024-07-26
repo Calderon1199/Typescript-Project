@@ -18,7 +18,7 @@ class Review {
 
     async updateReview(id) {
         const sql = 'UPDATE reviews SET stars = ?, reviewText = ? WHERE id = ?';
-        const values = [this.stars, this.stars, id];
+        const values = [this.stars, this.reviewText, id];
         await query(sql, values);
     };
 
@@ -43,5 +43,5 @@ class Review {
         return await query(sql, [limit, offset]);
     };
 };
-
+ 
 module.exports = Review;
