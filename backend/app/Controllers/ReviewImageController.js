@@ -21,11 +21,25 @@ module.exports = {
         };
     },
 
+    singleReviewImage: async (req, res, next) => {
+        try {
+            const {id} = req.params;
+
+            const images = await ReviewImage.getReviewImageByReviewId(id);
+
+            if (!images.length) return res.status(404).json({ message: 'Images not found' });
+
+            return res.status(200).json({ images });
+        } catch (err) {
+            next(err);
+        };
+    },
+
     reviewImageList: async (req, res, next) => {
         try {
             const reviewImages = await ReviewImage.getAllReviewImages();
             res.status(200).json({ data: reviewImages });
-            
+
         } catch (err) {
             next(err);
         };
@@ -34,7 +48,7 @@ module.exports = {
     updateReviewImage: async (req, res, next) => {
         try {
             const {url} = req.body;
-            const id = req.params.id;
+            const {id} = req.params;
 
             const reviewImageData = {url: url.trim()};
 

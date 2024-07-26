@@ -23,8 +23,7 @@ class ReviewImage {
 
     static async getReviewImageById(id) {
         const sql = 'SELECT id, url, userId, reviewId FROM reviewImages WHERE id = ?';
-        const images = await query(sql, [id]);
-        return images[0];
+        return await query(sql, [id]);
     };
 
     static async deleteReviewImageById(id) {
