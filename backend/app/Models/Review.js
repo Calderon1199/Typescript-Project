@@ -22,6 +22,11 @@ class Review {
         await query(sql, values);
     };
 
+    static async getUserReviews(id) {
+        const sql = 'SELECT * FROM reviews WHERE userId = ?';
+        return await query(sql, [id]);
+    };
+
     static async getReviewById(id) {
         const sql = 'SELECT id, stars, userId, listingId, reviewText FROM reviews WHERE id = ?';
         const reviews = await query(sql, [id]);

@@ -7,8 +7,8 @@ const validate = require('../../app/Middlewares');
 
 router.post('/', requireAuth, validateListing(), validate, ListingController.listingStore);
 router.get('/user', requireAuth, ListingController.userListings);
-router.get('/:id', ListingController.singleListing);
 router.get('/all', ListingController.listingsLists);
+router.get('/:id', ListingController.singleListing);
 router.put('/:id', requireAuth, validateListing(), validate, ListingController.updateListing);
 router.delete('/:id', requireAuth, ListingController.deleteListing);
 

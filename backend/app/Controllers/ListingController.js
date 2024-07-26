@@ -48,9 +48,9 @@ module.exports = {
             const userListings = await Listing.getUserListings(id);
 
             if (!userListings.length) {
-                return res.status(200).json({ message: 'No owned listings'});
+                return res.status(200).json({ message: 'No owned listings' });
             } else {
-                res.status(200).json({ userListings: userListings});
+                res.status(200).json({ userListings });
             };
 
         } catch (err) {
