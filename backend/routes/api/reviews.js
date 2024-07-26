@@ -8,7 +8,6 @@ const { requireAuth } = require('../../utils/auth');
 router.post('/', requireAuth, validateReview(), validate, reviewController.reviewStore);
 router.get('/user', requireAuth, reviewController.userReviews);
 router.get('/all', reviewController.reviewLists);
-router.get('/:id', reviewController.singleReview);
 router.put('/:id', requireAuth, validateReview(), validate, reviewController.updateReview);
 router.delete('/:id', requireAuth, reviewController.deleteReview);
 
