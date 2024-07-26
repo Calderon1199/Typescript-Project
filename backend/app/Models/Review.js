@@ -43,5 +43,5 @@ class Review {
         return await query(sql, [limit, offset]);
     };
 };
- 
+
 module.exports = Review;
