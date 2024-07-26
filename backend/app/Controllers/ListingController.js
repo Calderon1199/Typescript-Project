@@ -55,24 +55,31 @@ module.exports = {
 
         } catch (err) {
             next(err);
-        }
+        };
     },
+
 
     singleListing: async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const singleListing = await Listing.getListingById(id);
 
             if (!singleListing) {
-                return res.status(404).json({ message: 'Listing not found'});
-            } else {
-                return res.status(200).json({
-                    listing: singleListing
-                });
+                return res.status(404).json({ message: 'Listing not found' });
             };
+
+            const images = await Listing.getImagesByListingId(id);
+
+
+            const listing = {
+                ...singleListing,
+                images,
+
+            };
+            return res.status(200).json({ listing });
         } catch (err) {
             next(err);
-        }
+        };
     },
 
     listingsLists: async (req, res, next) => {
