@@ -66,7 +66,7 @@ class Listing {
         }
 
         const listing = {
-            listingId: listingData[0].listingId,
+            id: listingData[0].listingId,
             name: listingData[0].name,
             city: listingData[0].city,
             state: listingData[0].state,
@@ -131,7 +131,7 @@ class Listing {
 
             if (!listing) {
                 listing = {
-                    listingId: row.listingId,
+                    id: row.listingId,
                     name: row.name,
                     city: row.city,
                     state: row.state,
