@@ -2,11 +2,18 @@
 "use client"; // Add this line at the top
 
 import React, { useEffect, useState } from 'react';
-import { fetchCsrfToken } from '@/utils/csrf';
+import { csrfFetch } from '@/utils/csrf';
 
 interface Listing {
   id: number;
-  title: string;
+  name: string;
+  city: string;
+  state: string;
+  price: string;
+  userId: number;
+  street: string;
+  zipcode: string;
+  country: string;
   description: string;
 }
 
@@ -17,36 +24,27 @@ const ListingsClient: React.FC = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const csrfToken = await fetchCsrfToken();
-        const response = await fetch('/api/listings/lists', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'CSRF-Token': csrfToken,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch listings');
-        }
-        const data = await response.json();
-        setListings(data.data);
-      } catch (err) {
-        setError((err as Error).message);
+        const response = await csrfFetch('/api/listings/all', 'GET');
+        setListings(response.allListings);
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
       }
     };
+
     fetchListings();
   }, []);
 
   return (
     <div>
-      <h1>Listings</h1>
       {error && <p>{error}</p>}
       <ul>
         {listings.map((listing) => (
           <li key={listing.id}>
-            <h2>{listing.title}</h2>
-            <p>{listing.description}</p>
+            <div>
+              <img src="https://media.istockphoto.com/id/1396856251/photo/colonial-house.webp?b=1&s=612x612&w=0&k=20&c=MC6v8YP2XPks0RHV1cnYg0K6mgxc2cC_w1bMIRTiw3Q=" alt="home"></img>
+            </div>
+            <h2>{listing.name}</h2>
+            <p>{listing.price}</p>
           </li>
         ))}
       </ul>
