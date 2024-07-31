@@ -2,30 +2,21 @@
 "use client"; // Add this line at the top
 
 import React, { useEffect, useState } from 'react';
-import { csrfFetch } from '@/utils/csrf';
+import { getAllListings, getListingById, getUserListings, singleListingAtom, userListingsAtom } from '@/api/listing';
+import { useAtom } from 'jotai';
 
-interface Listing {
-  id: number;
-  name: string;
-  city: string;
-  state: string;
-  price: string;
-  userId: number;
-  street: string;
-  zipcode: string;
-  country: string;
-  description: string;
-}
+
 
 const ListingsClient: React.FC = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useAtom(userListingsAtom);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await csrfFetch('/api/listings/all', 'GET');
-        setListings(response.allListings);
+        const response = await getUserListings();
+        console.log(response)
+        // setListings(response.userListings);
       } catch (error) {
         console.error('Failed to fetch listings:', error);
       }
