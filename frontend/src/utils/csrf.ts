@@ -3,9 +3,10 @@
 export const csrfFetch = async (url: string, method: string, body?: any) => {
     try {
         // Fetch the CSRF token
-        const tokenResponse = await fetch('/api/csrf/restore', {
+        const tokenResponse = await fetch('http://localhost:8000/api/csrf/restore', {
             method: 'GET',
         });
+        console.log(tokenResponse)
 
         if (!tokenResponse.ok) {
             throw new Error('Failed to fetch CSRF token');
@@ -14,7 +15,7 @@ export const csrfFetch = async (url: string, method: string, body?: any) => {
         const { csrfToken } = await tokenResponse.json();
 
         // Make the actual fetch call with the CSRF token
-        const fetchCall = await fetch(`http://localhost:5000${url}`, {
+        const fetchCall = await fetch(`http://localhost:8000${url}`, {
             method,
             headers: {
                 'Content-Type': 'application/json',
